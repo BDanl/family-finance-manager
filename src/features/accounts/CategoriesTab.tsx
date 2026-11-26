@@ -142,6 +142,14 @@ export function CategoriesTab({ householdId, canManage }: CategoriesTabProps) {
             {items.map((category) => (
               <div key={category.id} className="p-3 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
+                  {category.color && /^#[0-9a-fA-F]{3,8}$/.test(category.color) && (
+                    <span
+                      className="inline-block w-3 h-3 rounded-full"
+                      style={{ backgroundColor: category.color }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  {category.icon && <span aria-hidden="true">{category.icon}</span>}
                   <span className="text-sm font-medium text-gray-900">{category.name}</span>
                   {category.is_default && (
                     <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">

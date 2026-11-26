@@ -110,6 +110,7 @@ describe('AccountsPage', () => {
     render(<AccountsPage />);
 
     expect(screen.getByText('Checking')).toBeInTheDocument();
+    expect(screen.getByText('Balance')).toBeInTheDocument();
     expect(screen.getByText('New account')).toBeInTheDocument();
     expect(screen.getByText('Edit')).toBeInTheDocument();
     expect(screen.getByText('Archive')).toBeInTheDocument();

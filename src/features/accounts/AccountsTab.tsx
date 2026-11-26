@@ -292,6 +292,14 @@ export function AccountsTab({ householdId, canManage, defaultCurrency }: Account
             <div key={account.id} className="p-4 flex items-center justify-between">
               <div>
                 <div className="flex items-center space-x-2">
+                  {account.color && /^#[0-9a-fA-F]{3,8}$/.test(account.color) && (
+                    <span
+                      className="inline-block w-3 h-3 rounded-full"
+                      style={{ backgroundColor: account.color }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  {account.icon && <span aria-hidden="true">{account.icon}</span>}
                   <span className="font-medium text-gray-900">{account.name}</span>
                   <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">
                     {account.account_type}
@@ -308,9 +316,12 @@ export function AccountsTab({ householdId, canManage, defaultCurrency }: Account
               </div>
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-500">{account.currency}</span>
-                <span className="font-medium text-gray-900">
-                  {formatCurrency(account.opening_balance, account.currency)}
-                </span>
+                <div className="text-right">
+                  <div className="text-xs text-gray-400">Balance</div>
+                  <span className="font-medium text-gray-900">
+                    {formatCurrency(account.opening_balance, account.currency)}
+                  </span>
+                </div>
                 {canManage && (
                   <div className="flex space-x-2">
                     <button

@@ -33,8 +33,11 @@ as $$
   limit 1;
 $$;
 
-revoke all on function public.current_household_role(uuid) from public, anon;
-grant execute on function public.current_household_role(uuid) to authenticated;
+revoke all on function public.current_household_role(uuid) from public;
+-- anon included so unauthenticated queries get a clean deny (null role)
+-- instead of a function permission error. The function only reveals the
+-- caller's own role, so this leaks nothing.
+grant execute on function public.current_household_role(uuid) to authenticated, anon;
 
 -- ---------------------------------------------------------------------------
 -- Re-create households policies using the centralized helper
@@ -152,12 +155,20 @@ create table public.categories (
   is_default boolean not null default false,
   archived_at timestamptz,
   created_at timestamptz not null default now(),
-  unique (household_id, id),
-  unique (household_id, name, category_type)
+  unique (household_id, id)
+  -- name uniqueness is enforced by idx_categories_unique_name below
+  -- (case-insensitive, active rows only)
 );
 
 create index idx_categories_household_id on public.categories(household_id);
 create index idx_categories_household_type on public.categories(household_id, category_type);
+
+-- Case-insensitive unique category name per household/type among active rows.
+-- Archived categories don't block reusing a name. ON CONFLICT DO NOTHING in
+-- seed_default_categories still works (unique indexes count as conflicts).
+create unique index idx_categories_unique_name
+on public.categories (household_id, category_type, lower(name))
+where archived_at is null;
 
 alter table public.categories enable row level security;
 
